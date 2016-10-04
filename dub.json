@@ -1,0 +1,8 @@
+{
+	"name": "necromunda",
+	"description": "A minimal D application.",
+	"copyright": "Copyright © 2016, ian",
+	"authors": ["ian"],
+	"dependencies": {
+	}
+}
