@@ -1,4 +1,4 @@
-module core.util.Enum;
+module nec.core.util.Enum;
 
 import std.traits;
 
@@ -37,9 +37,8 @@ unittest
 	enum Countries
 	{
 		Canada,
-		Congo,
-		Honduras,
 		Japan,
+		Mexico,
 		Somalia,
 		UnitedStates,
 		Vanuatu,
@@ -47,12 +46,10 @@ unittest
 	with(Countries)
 	{
 		enum IsViolent = [ 
-			Congo: true,
-			Honduras: true,
+			Mexico: true,
 			Somalia: true,
 			UnitedStates: true,
 		];
-		static assert(EnumMapToArray!()(IsViolent) == [false, true, true, false, true, true, false]);
+		static assert(EnumMapToArray!()(IsViolent) == [false, false, true, true, true, false]);
 	}
-	pragma(msg, "Hello!");
 }

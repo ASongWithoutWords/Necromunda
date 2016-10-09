@@ -1,19 +1,31 @@
-module core.math.Vector;
+module nec.core.math.Vector;
 
 import std.conv;
 import std.traits;
 
-import core.util.StaticRange;
+import nec.core.math.Scalar;
+
+import nec.core.util.StaticRange;
 
 alias Vector2(T) = Vector!(2, T);
 alias Vector3(T) = Vector!(3, T);
 
 
-Vector!(size, T) Vector(T, uint size)(T[size] values)
+Vector!(T.length, typeof(T[0])) Vector(T...)()
+	if(T.length > 0)
 {
-	Vector!(size, T) vec;
-	vec.values = values;
+	Vector!(T.length, typeof(T[0])) vec;
+	foreach(i, t; T)
+	{
+		vec[i] = t;
+	}
+	//vec.values = values;
 	return vec;
+}
+unittest
+{
+	static assert(Vector!(4, 5, 7)[0] == 4);
+	static assert(Vector!(2.m, 3.m, 4.m)[1] == 3.m);
 }
 
 Vector!(size, T) Vector(T, uint size)(T[size] values ...)
@@ -24,7 +36,7 @@ Vector!(size, T) Vector(T, uint size)(T[size] values ...)
 }
 
 struct Vector(uint size, T)
-	if(isNumeric!T)
+	//if(isNumeric!T)
 {
 	private alias Vector!(size, T) This;
 	
@@ -68,7 +80,6 @@ struct Vector(uint size, T)
 		return result;
 	}
 
-
 	This opBinary(string op)(This rhs) const pure
 		if(op == "+" || op == "-")
 	{
@@ -78,12 +89,6 @@ struct Vector(uint size, T)
 			mixin("result[i] = this[i]"~op~"rhs[i];");
 		}
 		return result;
-	}
-	unittest
-	{
-		static assert(V2i(4, 5) + V2i(5, 6) == V2i(9, 11));
-		static assert(V2i(7,-1) + V2i(-3, 4) == V2i(4, 3));
-		static assert(V2i(7, 1) - V2i(5, -1) == V2i(2, 2));
 	}
 
     // TODO: Ian - fix this, is not necessarily T, can be any scalar.
@@ -97,11 +102,6 @@ struct Vector(uint size, T)
 		}
 		return result;
 	}
-	unittest
-	{
-		static assert(V2i(2,4) * 2 == V2i(4,8));
-		static assert(V2i(4, 16) / 2 == V2i(2,8));
-	}
 
 	This opBinaryRight(string op)(T rhs) const pure
 		if(isNumeric!T && (op == "*"))
@@ -113,41 +113,50 @@ struct Vector(uint size, T)
 		}
 		return result;
 	}
-	unittest
-	{
-		static assert(2 * V2i(2,4) == V2i(4,8));
-		static assert(3 * V2i(1, 7) == V2i(3,21));
-	}
 }
 unittest
 {
-    alias Vector2!int V2i;
+    //alias Vector2!int V2i;
 
-    // Constructor
-    static assert(V2i(1, 7).values == [1,7]);
+    // Construction
+    static assert(Vector!(1, 7).values == [1,7]);
 
     // Generic vector construction
-    static assert(Vector!()([3, 2, 1]) == Vector3!int(3, 2, 1)); // TODO: can be improved on?
+    static assert(Vector!(3, 2, 1) == Vector3!int(3, 2, 1));
 
     // Indexing
- 	static assert(V2i(1, 7)[1] == 7);
+ 	static assert(Vector!(1, 7)[1] == 7);
 
     // Index assignment
     {
-        V2i BuildWithIndexAssign(int a, int b) pure
+        Vector2!int BuildWithIndexAssign(int a, int b) pure
         {
-            V2i v;
+            Vector2!int v;
             v[0] = a;
             v[1] = b;
             return v;
         }
-        static assert(BuildWithIndexAssign(2,3) == V2i(2, 3));
+        enum v = BuildWithIndexAssign(2, 3);
+        static assert(v[0] == 2 && v[1] == 3);
     }
 
-    // Equality operator
-    static assert(V2i(2,-7) == V2i(2,-7));
-    static assert(V2i(3,4) != V2i(4,5));
+    // Equality
+    static assert(Vector!(2,-7) == Vector!(2,-7));
+    static assert(Vector!(3, 4) != Vector!(4, 5));
+
+    // Negation
+	static assert(-Vector!(-2, 3) == Vector!(2,-3));
+
+    // Addition/Subtraction
+	static assert(Vector!(4, 5) + Vector!(5, 6) == Vector!(9, 11));
+	static assert(Vector!(7,-1) + Vector!(-3, 4) == Vector!(4, 3));
+	static assert(Vector!(7, 1) - Vector!(5, -1) == Vector!(2, 2));
+
+	// Scalar multiplication and division
+	static assert(Vector!(2,4) * 2 == Vector!(4,8));
+    static assert(Vector!(4, 16) / 2 == Vector!(2,8));
+    static assert(2 * Vector!(2,4) == Vector!(4,8));
+    static assert(3 * Vector!(1, 7) == Vector!(3,21));
 
 
-	static assert(-V2i(-2, 3) == V2i(2,-3));
 }

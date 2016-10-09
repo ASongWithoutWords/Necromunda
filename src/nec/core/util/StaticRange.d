@@ -1,4 +1,4 @@
-module core.util.StaticRange;
+module nec.core.util.StaticRange;
 
 import std.typetuple: TypeTuple;
 import std.traits: isArray;

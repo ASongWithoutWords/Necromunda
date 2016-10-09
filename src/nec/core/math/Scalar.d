@@ -1,9 +1,9 @@
-module core.math.Scalar;
+module nec.core.math.Scalar;
 
 import std.conv;
 
-import core.math.Vector;
-import core.util.Enum;
+import nec.core.math.Vector;
+import nec.core.util.Enum;
 
 private enum Unit
 {
@@ -32,6 +32,10 @@ struct Scalar(Units units)
 		static if(op == "*") return Scalar!(units + rhsUnits)(value*rhs.value);
 		static if(op == "/") return Scalar!(units - rhsUnits)(value/rhs.value);
 	}
+	int toInt()
+	{
+		return to!int(value);
+	}
 }
 unittest
 {
@@ -40,10 +44,6 @@ unittest
     static assert(2.m + 5.m == 7.m);
     static assert(2.N * 5.s == 10.kg_m_per_s);
     static assert(2.m / 5.s == 0.4.m_per_s);
-}
-unittest
-{
-    pragma(msg, "Hello intellij!");
 }
 
 alias Scalar(int[Unit] units) = Scalar!(Vector!()(EnumMapToArray!()(units)));
@@ -75,7 +75,7 @@ mixin template Declare(string name, string symbol, string units)
 
 // Length
 mixin Declare!("Meters",					"m",			"Unit.meters: 1");
-mixin Declare!("Pixles",					"px",			"Unit.pixels: 1");
+mixin Declare!("Pixels",					"px",			"Unit.pixels: 1");
 
 // Mass
 mixin Declare!("Kilograms",					"kg",			"Unit.kilograms: 1");
@@ -85,7 +85,7 @@ mixin Declare!("Seconds",					"s",			"Unit.seconds: 1");
 
 // Area
 mixin Declare!("MetersSquared",				"m2",			"Unit.meters: 2");
-mixin Declare!("PixlesSquared",				"px2",			"Unit.pixels: 2");
+mixin Declare!("PixelsSquared",				"px2",			"Unit.pixels: 2");
 
 // Length ratios
 mixin Declare!("MetersPerPixel",			"m_per_px",		"Unit.meters: 1, Unit.pixels: -1");
