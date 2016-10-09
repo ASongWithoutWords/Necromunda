@@ -1,7 +1,5 @@
 module nec.core.util.Array;
 
-import std.stdio;
-
 T first(T)(const T[] arr) pure
 {
 	return arr[0];
